@@ -24,34 +24,18 @@ let modifyFile3 = (val) => {
 // data2.json => halo world => hasil yang diambil adalah world
 // data3.json => halo sekai => hasil yang diambli adalah sekai
 const bacaData = (fnCallback) => {
-  Promise.all([
-    new Promise((resolve, reject) => {
-      fs.readFile(file1, "utf8", (err, data) => {
-        if (err) reject(err);
-        resolve(JSON.parse(data));
-      });
-    }),
-    new Promise((resolve, reject) => {
-      fs.readFile(file2, "utf8", (err, data) => {
-        if (err) reject(err);
-        resolve(JSON.parse(data));
-      });
-    }),
-    new Promise((resolve, reject) => {
-      fs.readFile(file3, "utf8", (err, data) => {
-        if (err) reject(err);
-        resolve(JSON.parse(data));
-      });
-    }),
-  ]).then((data) => {
-    const result = data.map((item) => {
-      return JSON.stringify(item)
-        .replace(/([^a-zA-Z]|data|message|halo)/gi, "")
-        .trim();
+  const files = [file1, file2, file3],
+    result = [];
+  let cntr = 0;
+  
+  files.forEach((file) => {
+    return fs.readFile(file, "utf8", (err, data) => {
+      if (err) console.log(err);
+      result.push(data.replace(/([^a-zA-Z]|data|message|halo)/gi, "").trim());
+      ++cntr;
+
+      if (cntr === files.length) fnCallback(null, result);
     });
-    fnCallback(null, result);
-  }).catch((err) => {
-    fnCallback(err, null);
   });
 };
 
